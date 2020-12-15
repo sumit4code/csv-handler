@@ -1,0 +1,58 @@
+version: '3.7'
+
+# Define services
+services:
+  # App backend service
+  app-server:
+    container_name: app-server
+    # Configuration for building the docker image for the backend service
+    build:
+      context: csv-file-handler # Use an image built from the specified dockerfile in the `polling-app-server` directory.
+      dockerfile: ./Dockerfile
+    image: csv-app-server:latest
+    ports:
+      - "9091:9091" # Forward the exposed port 8080 on the container to port 8080 on the host machine
+    restart: always
+    depends_on:
+      - db # This service depends on mysql. Start that first.
+    environment: # Pass environment variables to the service
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/csv-handler?useSSL=false&serverTimezone=UTC&useLegacyDatetimeCode=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: sumit
+      SPRING_DATASOURCE_PASSWORD: sumit
+#      JAVA_OPTS: "
+#        -Djava.net.preferIPv4Stack=true
+#        -Djava.net.preferIPv4Addresses=true"
+    volumes:
+      - /home/sumit/developent/temp/fileloader:/app/fileloader
+    networks: # Networks to join (Services on the same network can communicate with each other using their name)
+      - backend
+
+  # Database Service (Mysql)
+  db:
+    container_name: db-mysql
+    image: mysql:latest
+    ports:
+      - "3306:3306"
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: sumit
+      MYSQL_DATABASE: csv-handler
+      MYSQL_USER: sumit
+      MYSQL_PASSWORD: sumit
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: "/usr/bin/mysql --user=sumit --password=sumit --execute \"SHOW DATABASES;\""
+      interval: 2s
+      timeout: 20s
+      retries: 10
+    networks:
+      - backend
+
+# Volumes
+volumes:
+  db-data:
+
+# Networks to be created to facilitate communication between containers
+networks:
+  backend:

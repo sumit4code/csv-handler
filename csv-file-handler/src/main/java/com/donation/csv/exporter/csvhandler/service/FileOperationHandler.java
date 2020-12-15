@@ -2,10 +2,6 @@ package com.donation.csv.exporter.csvhandler.service;
 
 import com.donation.csv.exporter.csvhandler.model.Transaction;
 import com.fasterxml.jackson.databind.MappingIterator;
-import java.io.File;
-import java.io.IOException;
-import java.util.Optional;
-import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.monitor.FileAlterationListener;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
@@ -15,6 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import java.io.File;
+import java.util.Optional;
+
 @Slf4j
 @Service
 public class FileOperationHandler {
@@ -22,12 +22,16 @@ public class FileOperationHandler {
     private final String dirPath;
     private final long pollInterval;
     private final CsvProcessor csvProcessor;
+    private final TransactionProcessingService transactionProcessingService;
 
     @Autowired
-    public FileOperationHandler(@Value("${file.dir.path}") String dirPath, @Value("${file.pollInterval}") long pollInterval, CsvProcessor csvProcessor) {
+    public FileOperationHandler(@Value("${file.dir.path}") String dirPath, @Value("${file.pollInterval}") long pollInterval,
+                                CsvProcessor csvProcessor,
+                                TransactionProcessingService transactionProcessingService) {
         this.dirPath = dirPath;
         this.pollInterval = pollInterval;
         this.csvProcessor = csvProcessor;
+        this.transactionProcessingService = transactionProcessingService;
     }
 
     @PostConstruct
@@ -44,12 +48,7 @@ public class FileOperationHandler {
             @Override
             public void onFileCreate(File file) {
                 Optional<MappingIterator<Transaction>> transactionMappingIterator = csvProcessor.processFile(file);
-                try {
-                    log.info("data {}", transactionMappingIterator.get().readAll());
-                } catch (IOException e) {
-                    log.error("Error occurred during loading of csv :" + file.getPath(), e);
-                }
-                // code for processing creation event
+                transactionMappingIterator.ifPresent(transactionProcessingService::process);
             }
 
             @Override
