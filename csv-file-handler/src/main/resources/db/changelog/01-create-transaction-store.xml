@@ -59,7 +59,7 @@
             <column name="gl_description" type="varchar(255)">
                 <constraints nullable="true" unique="false"/>
             </column>
-            <column name="external_app_site_configuration_id" type="varchar(255)">
+            <column name="external_conf_id" type="varchar(255)">
                 <constraints nullable="true" unique="false"/>
             </column>
             <column name="kiosk_name" type="varchar(255)">
@@ -120,7 +120,7 @@
                 <constraints nullable="true" unique="false"/>
             </column>
             <column name="transaction_id" type="int(8)">
-                <constraints nullable="false" unique="true" primaryKey="true"/>
+                <constraints nullable="false" primaryKey="true"/>
             </column>
             <column name="transaction_type" type="varchar(255)">
                 <constraints nullable="true" unique="false"/>

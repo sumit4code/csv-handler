@@ -6,9 +6,15 @@ import com.donation.csv.exporter.csvhandler.model.Transaction;
 import com.donation.csv.exporter.csvhandler.repository.TransactionRepository;
 import com.fasterxml.jackson.databind.MappingIterator;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 
 @Slf4j
 @Service
@@ -37,14 +43,17 @@ public class TransactionProcessingService {
             Transaction transaction = mappingIterator.next();
             try {
                 if (this.shouldProcess(totalSize, failureCount)) {
-                    transactionRepository.save(transaction);
+                    this.storeEntry(transaction);
                     log.debug("Saved Successfully {}", transaction);
                     successCount++;
                 } else {
                     ignoreCount++;
                     log.warn("ignored as failure percentage has reached");
                 }
-            } catch (Exception e) {
+            } catch (DataIntegrityViolationException e) {
+                log.warn("Already exist, so ignoring");
+                ignoreCount++;
+            } catch (ConstraintViolationException e) {
                 log.error("Error while persisting data {}", transaction, e);
                 failureCount++;
             }
@@ -72,5 +81,10 @@ public class TransactionProcessingService {
         }
         float failurePercentage = ((float) failureCount * 100) / totalCount;
         return failurePercentage < threasholdPercentageForFailure;
+    }
+
+    @Transactional
+    public void storeEntry(Transaction transaction) {
+        transactionRepository.save(transaction);
     }
 }

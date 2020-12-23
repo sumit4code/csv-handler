@@ -7,10 +7,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.springframework.data.domain.Persistable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.PostLoad;
+import javax.persistence.PrePersist;
+import javax.persistence.Transient;
 import java.math.BigDecimal;
 
 @Builder
@@ -20,7 +24,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Entity(name = "transaction_store")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Transaction {
+public class Transaction implements Persistable<Integer> {
 
     @Column(name = "bank_account_number")
     @JsonProperty("Bank Account Number")
@@ -76,7 +80,7 @@ public class Transaction {
     @Column(name = "gl_description")
     @JsonProperty("GL Descript")
     public String glDescription;
-    @Column(name = "external_app_site_configuration_id")
+    @Column(name = "external_conf_id")
     @JsonProperty("External App Site Configuration ID")
     public String externalAppSiteConfigurationId;
     @Column(name = "kiosk_name")
@@ -206,4 +210,31 @@ public class Transaction {
     @Column(name = "worksite_name")
     @JsonProperty("Worksite Name")
     private String workSiteName;
+
+    @Transient
+    private boolean update;
+
+    public boolean isUpdate() {
+        return this.update;
+    }
+
+    public void setUpdate(boolean update) {
+        this.update = update;
+    }
+
+    @Override
+    public Integer getId() {
+        return transactionId;
+    }
+
+    @Override
+    public boolean isNew() {
+        return !this.update;
+    }
+
+    @PrePersist
+    @PostLoad
+    void markUpdated() {
+        this.update = true;
+    }
 }
