@@ -10,7 +10,7 @@ VOLUME /tmp
 # Set the current working directory inside the image
 WORKDIR /app
 
-RUN mkdir -p /app/fileloader
+RUN mkdir -p /app/fileloader /app/sourceDir /app/logs /app/backup
 
 
 # Make port 8081 available to the world outside this container
@@ -23,4 +23,4 @@ ARG JAR_FILE=target/csv-handler.jar
 ADD ${JAR_FILE} csv-handler.jar
 
 # Run the jar file
-ENTRYPOINT ["java","-jar","/app/csv-handler.jar"]
+ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom","-Dspring.profiles.active=dev","-jar","/app/csv-handler.jar"]

@@ -4,12 +4,13 @@ import com.donation.csv.exporter.csvhandler.model.Transaction;
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
-import java.io.File;
-import java.io.IOException;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Service;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -23,7 +24,7 @@ public class CsvProcessor {
     public Optional<MappingIterator<Transaction>> processFile(File file) {
         String filePath = file.getPath();
         if (this.isValidFile(filePath)) {
-            log.debug("Received a valid file with {}", filePath);
+            log.info("Received a valid file with {}", filePath);
             try {
                 return Optional.of(csvMapper.readerWithTypedSchemaFor(Transaction.class).with(schema).readValues(file));
             } catch (IOException e) {

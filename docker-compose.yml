@@ -24,6 +24,8 @@ services:
 #        -Djava.net.preferIPv4Addresses=true"
     volumes:
       - /home/sumit/developent/temp/fileloader:/app/fileloader
+      - /home/sumit/developent/temp/sourceDir:/app/sourceDir
+      - /home/sumit/developent/temp/backup:/app/backup
     networks: # Networks to join (Services on the same network can communicate with each other using their name)
       - backend
 
@@ -41,11 +43,6 @@ services:
       MYSQL_PASSWORD: sumit
     volumes:
       - db-data:/var/lib/mysql
-    healthcheck:
-      test: "/usr/bin/mysql --user=sumit --password=sumit --execute \"SHOW DATABASES;\""
-      interval: 2s
-      timeout: 20s
-      retries: 10
     networks:
       - backend
 

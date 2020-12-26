@@ -24,7 +24,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Entity(name = "transaction_store")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Transaction implements Persistable<Integer> {
+public class Transaction implements Persistable<Long> {
 
     @Column(name = "bank_account_number")
     @JsonProperty("Bank Account Number")
@@ -149,7 +149,7 @@ public class Transaction implements Persistable<Integer> {
     @Id
     @Column(name = "transaction_id")
     @JsonProperty("Txn ID")
-    private int transactionId;
+    private long transactionId;
     @Column(name = "transaction_type")
     @JsonProperty("Txn Type")
     private String transactionType;
@@ -223,7 +223,7 @@ public class Transaction implements Persistable<Integer> {
     }
 
     @Override
-    public Integer getId() {
+    public Long getId() {
         return transactionId;
     }
 

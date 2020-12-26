@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:remove="all"><span th:text="${title}"></span></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:300,800" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Oleo+Script:400" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div>
+    <br/>
+
+    <table border="1" cellpadding="2" cellspacing="0" width="30%" id="emailHeader">
+        <tr>
+            <td align="left" valign="top">
+                <p>Records Received : <span th:text="${csvImporterStatus.totalCount}"/></p>
+                <p>Records Processed: <span th:text="${csvImporterStatus.successCount}"/></p>
+                <p>Records Ignored : <span th:text="${csvImporterStatus.ignoredCount}"/></p>
+                <p>Records Failed : <span th:text="${csvImporterStatus.failureCount}"/></p>
+            </td>
+        </tr>
+    </table>
+
+    <table border="1">
+        <thead>
+        <tr>
+            <th> Row Count</th>
+            <th> Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:if="${csvImporterStatus.failureDetails.empty}">
+            <td colspan="2"> No error</td>
+        </tr>
+        <tr th:each="failureDetail : ${csvImporterStatus.failureDetails}">
+            <td><span th:text="${failureDetail.rowNumber}"></span></td>
+            <td><span th:text="${failureDetail.reason}"></span></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <table border="0" cellpadding="2" cellspacing="0" width="30%" id="emailFooter">
+        <tr>
+            <td align="left" valign="top">
+                Please contact system operator for any kind of support.
+            </td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>
