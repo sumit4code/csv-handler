@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @ToString
@@ -21,6 +22,6 @@ public class CsvImporterStatus implements Serializable {
     private int successCount;
     private int failureCount;
     private int ignoredCount;
-    private List<FailureDetails> failureDetails;
+    private List<FailureDetails> failureDetails = new ArrayList<>();
 
 }

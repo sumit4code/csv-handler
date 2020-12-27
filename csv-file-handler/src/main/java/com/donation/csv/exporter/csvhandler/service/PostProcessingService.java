@@ -30,18 +30,18 @@ public class PostProcessingService {
     }
 
     public void postProcessing(File file, String traceId, CsvImporterStatus csvImporterStatus) {
+        Path source = Paths.get(file.getPath());
+        Path dest = Paths.get(backupDirPath + File.separator + traceId + file.getName());
+        log.info("Created backup file to {}", dest);
+        try {
+            Files.move(source, dest);
+        } catch (IOException e) {
+            log.error("Error occurred while transferring file to backup place", e);
+        }
         Mail mail = Mail.builder().subject(String.format("CSV Import status :: %s | Tracing Id :: %s", csvImporterStatus.getStatus(), traceId)).recipient("sumitbppimt@gmail.com").build();
         Context context = new Context(Locale.forLanguageTag("en"));
         context.setVariable("csvImporterStatus", csvImporterStatus);
         context.setVariable("transactionId", traceId);
         emailNotification.send(mail, "email/email-template", context);
-        Path source = Paths.get(file.getPath());
-        Path dest = Paths.get(backupDirPath + File.separator + traceId + file.getName());
-        log.debug("Created backup file to {}", dest);
-        try {
-            Files.move(source, dest);
-        } catch (IOException e) {
-            log.error("Error occurred while transferring file", e);
-        }
     }
 }

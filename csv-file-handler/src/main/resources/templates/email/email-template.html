@@ -20,24 +20,22 @@
             </td>
         </tr>
     </table>
-
-    <table border="1">
-        <thead>
-        <tr>
-            <th> Row Count</th>
-            <th> Description</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:if="${csvImporterStatus.failureDetails.empty}">
-            <td colspan="2"> No error</td>
-        </tr>
-        <tr th:each="failureDetail : ${csvImporterStatus.failureDetails}">
-            <td><span th:text="${failureDetail.rowNumber}"></span></td>
-            <td><span th:text="${failureDetail.reason}"></span></td>
-        </tr>
-        </tbody>
-    </table>
+    <div th:if="${csvImporterStatus.failureDetails!=null and !csvImporterStatus.failureDetails.empty}">
+        <table border="1">
+            <thead>
+            <tr>
+                <th> Row Count</th>
+                <th> Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="failureDetail : ${csvImporterStatus.failureDetails}">
+                <td><span th:text="${failureDetail.rowNumber}"></span></td>
+                <td><span th:text="${failureDetail.reason}"></span></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 
     <table border="0" cellpadding="2" cellspacing="0" width="30%" id="emailFooter">
         <tr>
